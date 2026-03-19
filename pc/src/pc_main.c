@@ -53,7 +53,7 @@ static LONG WINAPI pc_veh_handler(PEXCEPTION_POINTERS ep) {
     }
     return EXCEPTION_CONTINUE_SEARCH;
 }
-#else
+#elif !defined(__EMSCRIPTEN__)
 /* POSIX equivalent of VEH — longjmp from signal handler (POSIX-defined for program faults) */
 static void pc_signal_handler(int sig, siginfo_t* info, void* ucontext) {
     (void)ucontext;
@@ -79,7 +79,7 @@ void pc_crash_protection_init(void) {
     if (!installed) {
 #ifdef _WIN32
         AddVectoredExceptionHandler(1, pc_veh_handler);
-#else
+#elif !defined(__EMSCRIPTEN__)
         struct sigaction sa;
         memset(&sa, 0, sizeof(sa));
         sa.sa_sigaction = pc_signal_handler;
@@ -110,9 +110,15 @@ void pc_platform_init(void) {
         exit(1);
     }
 
+#ifdef __EMSCRIPTEN__
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+#else
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+#endif
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 #ifdef PC_ENHANCEMENTS
@@ -158,6 +164,12 @@ void pc_platform_init(void) {
         SDL_Quit();
         exit(1);
     }
+
+#ifdef __EMSCRIPTEN__
+    GLuint vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+#endif
 
     SDL_GL_SetSwapInterval(g_pc_settings.vsync);
 
@@ -339,7 +351,10 @@ int main(int argc, char* argv[]) {
     pc_settings_load();
     pc_keybindings_load();
     pc_platform_init();
-    pc_disc_init();
+    if (!pc_disc_init()) {
+        printf("Failed to initialize disc. Did you provide a valid ROM?\n");
+        exit(1);
+    }
     pc_assets_init();
 
     ac_entry();                         /* sets HotStartEntry = &entry */

@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "m_select.h"
 
 #include "m_play.h"

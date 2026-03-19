@@ -341,7 +341,7 @@ extern void trademark_cleanup(GAME* game) {
 
 extern void trademark_init(GAME* game) {
 #ifdef TARGET_PC
-    OSReport("[PC] trademark_init: enter\n");
+    printf("[PC] trademark_init: enter\n");
 #endif
     GAME_TRADEMARK* trademark = (GAME_TRADEMARK*)game;
     GRAPH* g = game->graph;

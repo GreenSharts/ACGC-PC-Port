@@ -565,6 +565,22 @@ void pc_gx_flush_vertices(void) {
     glBindBuffer(GL_ARRAY_BUFFER, g_gx.vbo);
     glBufferData(GL_ARRAY_BUFFER, count * sizeof(PCGXVertex), g_gx.vertex_buffer, GL_STREAM_DRAW);
 
+#ifdef __EMSCRIPTEN__
+    /* WebGL 2.0 occasionally loses VAO attribute state binding;
+       explicitly refreshing them on draw guarantees they stick. */
+    {
+        size_t stride = sizeof(PCGXVertex);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)offsetof(PCGXVertex, position));
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)offsetof(PCGXVertex, normal));
+        glEnableVertexAttribArray(2);
+        glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, stride, (void*)offsetof(PCGXVertex, color0));
+        glEnableVertexAttribArray(3);
+        glVertexAttribPointer(3, 2, GL_FLOAT, GL_FALSE, stride, (void*)offsetof(PCGXVertex, texcoord));
+    }
+#endif
+
     /* Upload only dirty state groups */
     if (shader) {
         GLint loc;

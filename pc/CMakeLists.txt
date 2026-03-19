@@ -366,6 +366,22 @@ endif()
 
 if(WIN32)
     target_link_libraries(ac_pc opengl32 winmm imm32 version setupapi)
+elseif(EMSCRIPTEN)
+    target_link_options(ac_pc PRIVATE
+        "-sUSE_SDL=2"
+        "-sUSE_WEBGL2=1"
+        "-sFULL_ES3=1"
+        "-sMIN_WEBGL_VERSION=2"
+        "-sMAX_WEBGL_VERSION=2"
+        "-sWASM=1"
+        "-sALLOW_MEMORY_GROWTH=1"
+        "-sTOTAL_MEMORY=134217728"
+        "-sENVIRONMENT=web"
+        "-sASYNCIFY=1"
+        "--preload-file=${CMAKE_CURRENT_SOURCE_DIR}/shaders@/shaders"
+        "-sINVOKE_RUN=0"
+        "-sEXPORTED_RUNTIME_METHODS=['FS','callMain']"
+    )
 else()
     find_package(OpenGL REQUIRED)
     target_link_libraries(ac_pc OpenGL::GL dl pthread m)
@@ -375,6 +391,10 @@ set_target_properties(ac_pc PROPERTIES
     OUTPUT_NAME "AnimalCrossing"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
+
+if(EMSCRIPTEN)
+    set_target_properties(ac_pc PROPERTIES SUFFIX ".html")
+endif()
 
 # Copy shader files to output directory (loaded at runtime, with embedded fallback)
 add_custom_command(TARGET ac_pc POST_BUILD

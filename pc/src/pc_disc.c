@@ -281,6 +281,10 @@ static int str_ends_ci(const char* s, const char* suffix) {
 }
 
 static int find_disc_image(char* out_path, int out_sz) {
+#ifdef __EMSCRIPTEN__
+    snprintf(out_path, out_sz, "/rom/game.ciso");
+    return 1;
+#else
     static const char* dirs[] = { ".", "orig", "rom", NULL };
     int d;
 
@@ -303,6 +307,7 @@ static int find_disc_image(char* out_path, int out_sz) {
         closedir(dp);
     }
     return 0;
+#endif
 }
 
 /* ---- public API ---- */

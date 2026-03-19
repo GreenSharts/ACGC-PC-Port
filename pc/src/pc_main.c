@@ -53,7 +53,7 @@ static LONG WINAPI pc_veh_handler(PEXCEPTION_POINTERS ep) {
     }
     return EXCEPTION_CONTINUE_SEARCH;
 }
-#else
+#elif !defined(__EMSCRIPTEN__)
 /* POSIX equivalent of VEH — longjmp from signal handler (POSIX-defined for program faults) */
 static void pc_signal_handler(int sig, siginfo_t* info, void* ucontext) {
     (void)ucontext;
@@ -79,7 +79,7 @@ void pc_crash_protection_init(void) {
     if (!installed) {
 #ifdef _WIN32
         AddVectoredExceptionHandler(1, pc_veh_handler);
-#else
+#elif !defined(__EMSCRIPTEN__)
         struct sigaction sa;
         memset(&sa, 0, sizeof(sa));
         sa.sa_sigaction = pc_signal_handler;

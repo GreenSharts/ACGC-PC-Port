@@ -135,11 +135,11 @@ namespace std {
 typedef va_list __tag_va_List;
 }
 
-float fastcast_float(register unsigned char* s) {
+float fastcast_float(unsigned char* s) {
 #ifdef TARGET_PC
     return (float)(*s);
 #else
-    register float f;
+    float f;
 
 #ifdef __MWERKS__ // clang-format off
     asm {
@@ -151,11 +151,11 @@ float fastcast_float(register unsigned char* s) {
 #endif
 }
 
-float fastcast_float(register unsigned short* s) {
+float fastcast_float(unsigned short* s) {
 #ifdef TARGET_PC
     return (float)(*s);
 #else
-    register float f;
+    float f;
 
 #ifdef __MWERKS__ // clang-format off
     asm {
@@ -167,11 +167,11 @@ float fastcast_float(register unsigned short* s) {
 #endif
 }
 
-float fastcast_float(register signed char* s) {
+float fastcast_float(signed char* s) {
 #ifdef TARGET_PC
     return (float)(*s);
 #else
-    register float f;
+    float f;
 
 #ifdef __MWERKS__ // clang-format off
     asm {
@@ -183,11 +183,11 @@ float fastcast_float(register signed char* s) {
 #endif
 }
 
-float fastcast_float(register short* s) {
+float fastcast_float(short* s) {
 #ifdef TARGET_PC
     return (float)(*s);
 #else
-    register float f;
+    float f;
 
 #ifdef __MWERKS__ // clang-format off
     asm {

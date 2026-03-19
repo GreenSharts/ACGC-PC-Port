@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include "MSL_C/MSL_Common/float.h"
 
 #include <dolphin/base/PPCArch.h>

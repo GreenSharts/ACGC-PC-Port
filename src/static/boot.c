@@ -763,10 +763,23 @@ int main(int argc, const char** argv) {
   pc_bswap_u8_tlut_palettes();
   OSReport("[PC] boot: entering HotStartEntry loop (entry=%08x)...\n", (u32)HotStartEntry);
 #endif
+#if defined(__EMSCRIPTEN__)
+#include <emscripten.h>
+  /* The asyncify feature (-sASYNCIFY=1) enables the normal synchronous C loop to work
+     in the browser without blocking the main thread entirely, but we still need to
+     ensure we yield to the browser if we're simulating a main loop. Emscripten will
+     instrument our sync loop automatically due to the ASYNCIFY linker flag. */
+  while (HotStartEntry != nullptr) {
+    OSReport("ホットスタート(%08x)\n", HotStartEntry);
+    HotStartEntry = (*(void* (*)())HotStartEntry)();
+    emscripten_sleep(1);
+  }
+#else
   while (HotStartEntry != nullptr) {
     OSReport("ホットスタート(%08x)\n", HotStartEntry);
     HotStartEntry = (*(void* (*)())HotStartEntry)();
   }
+#endif
 
 #ifdef TARGET_PC
   /* No REL module to unlink on PC - code is statically linked */

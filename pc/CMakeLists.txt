@@ -378,8 +378,9 @@ elseif(EMSCRIPTEN)
         "-sTOTAL_MEMORY=134217728"
         "-sENVIRONMENT=web"
         "-sASYNCIFY=1"
-        "--preload-file=${DECOMP_ROOT}/Animal Crossing (USA, Canada).ciso@/rom/Animal Crossing (USA, Canada).ciso"
         "--preload-file=${CMAKE_CURRENT_SOURCE_DIR}/shaders@/shaders"
+        "-sINVOKE_RUN=0"
+        "-sEXPORTED_RUNTIME_METHODS=['FS','callMain']"
     )
 else()
     find_package(OpenGL REQUIRED)
